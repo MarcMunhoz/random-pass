@@ -5,11 +5,11 @@
     <b-card
       class="w-75 mx-auto"
       border-variant="danger"
-      header="O que são senhas"
-      header-bg-variant="danger"
+      header="O QUE SÃO SENHAS"
+      header-bg-variant="success"
     >
-      <b-card-text>Esse emaranhado de letras, símbolos e números pode ser considerado o primeiro sistema de defesa ativo de um usuário de determinada plataformam. Com o avanço da tecnologia, faz-se necessário senhas mais difíceis de serem quebradas. Alugumas dicas:
-        <b-list-group>
+      <b-card-text>Esse emaranhado de letras, símbolos e números pode ser considerado o primeiro sistema de defesa ativo de um usuário de determinada plataformam. Com o avanço da tecnologia, faz-se necessário senhas mais difíceis de serem quebradas. Algumas dicas:
+        <b-list-group class="mt-2">
           <b-list-group-item variant="secondary">
             Dê preferência a senhas sem referências ao mundo
             <em>real</em>. Exemplo: casa-da-praia-em-maragogi
@@ -24,7 +24,16 @@
           >Compartilhe suas senhas apenas com pessoas de sua total confiança</b-list-group-item>
         </b-list-group>
       </b-card-text>
-      <p>{{ theString }}</p>
+      <p>
+        Para ajuda um pouco, abaixo serão exibidas
+        <em>strings</em> geradas de forma randômica, com 16 caracteres. (entre os olhos). Cada 5 segundos uma nova
+        <em>string</em> é gerada.
+      </p>
+      <p class="font-weight-bolder shadow-sm">
+        <b-icon icon="eye-slash-fill"/>
+        {{ theString }}
+        <b-icon icon="eye-slash"/>
+      </p>
       <b-button
         type="button"
         class="btn-copy"
@@ -75,7 +84,7 @@ export default {
   },
   mounted() {
     setInterval(() => {
-      let theString = this.rndStr(15);
+      let theString = this.rndStr(16);
       this.theString = theString;
     }, 5000);
   }
