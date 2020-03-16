@@ -47,6 +47,9 @@
     "last 2 versions",
     "not ie <= 8"
   ],
-  "keywords": [],
+  "keywords": [
+    "string",
+    "random"
+  ],
   "description": ""
 }
