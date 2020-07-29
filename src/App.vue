@@ -8,17 +8,17 @@
       header="O QUE SÃO SENHAS"
       header-bg-variant="success"
     >
-      <b-card-text>Esse emaranhado de letras, símbolos e números pode ser considerado o primeiro sistema de defesa ativo de um usuário de determinada plataformam. Com o avanço da tecnologia, faz-se necessário senhas mais difíceis de serem quebradas. Algumas dicas:
+      <b-card-text>Esse emaranhado de letras, símbolos e números pode ser considerado o primeiro sistema de defesa ativo de um usuário de determinada plataforma. Com o avanço da tecnologia, faz-se necessário senhas mais difíceis de serem quebradas. Algumas dicas:
         <b-list-group class="mt-2">
           <b-list-group-item variant="secondary">
             Dê preferência a senhas sem referências ao mundo
-            <em>real</em>. Exemplo: casa-da-praia-em-maragogi
+            <em>real</em>. Exemplo: <del>casa-da-praia-em-maragogi</del>
           </b-list-group-item>
           <b-list-group-item variant="secondary">Combine letras, números e símbolos</b-list-group-item>
           <b-list-group-item
             variant="secondary"
           >Caso guarde as senhas digitalmente, use sempre criptografia</b-list-group-item>
-          <b-list-group-item variant="secondary">Troque as senhas regurlamente</b-list-group-item>
+          <b-list-group-item variant="secondary">Troque as senhas regulamente</b-list-group-item>
           <b-list-group-item
             variant="secondary"
           >Compartilhe suas senhas apenas com pessoas de sua total confiança</b-list-group-item>
