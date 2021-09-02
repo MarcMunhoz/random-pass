@@ -8,9 +8,7 @@
         senhas mais difíceis de serem quebradas. Algumas dicas:
         <b-list-group class="mt-2">
           <b-list-group-item variant="secondary">
-            Dê preferência a senhas sem referências ao mundo
-            <em>real</em>. Exemplo do que <strong>não</strong> fazer:
-            <del>casa-da-praia-em-maragogi</del>
+            Dê preferência a senhas sem referências ao mundo <em>real</em>. Exemplo do que <strong>não</strong> fazer: <del>casa-da-praia-em-maragogi</del>
           </b-list-group-item>
           <b-list-group-item variant="secondary">Combine letras, números e símbolos</b-list-group-item>
           <b-list-group-item variant="secondary">Caso guarde as senhas digitalmente, use sempre criptografia</b-list-group-item>
@@ -18,10 +16,7 @@
           <b-list-group-item variant="secondary">Compartilhe suas senhas apenas com pessoas de sua total confiança</b-list-group-item>
         </b-list-group>
       </b-card-text>
-      <p>
-        Para ajuda um pouco, abaixo serão exibidas
-        <em>strings</em> geradas de forma randômica. (entre os olhos). Cada 5 segundos uma nova <em>string</em> é gerada.
-      </p>
+      <p>Uma pequena ajuda, abaixo serão exibidas <em>strings</em> geradas de forma randômica. (entre os olhos). Cada 5 segundos uma nova <em>string</em> é gerada.</p>
 
       <p>
         <label for="passLen">Quantos carateres terá sua senha?</label>
