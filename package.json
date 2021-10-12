@@ -1,8 +1,8 @@
 {
   "name": "random-pass",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
-  "description": "",
+  "description": "A simple random string generator to better passwords",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
@@ -30,6 +30,13 @@
     "fast-glob": "^3.2.7",
     "glob-parent": "^6.0.1",
     "merge": "^2.1.1"
+  },
+  "resolutions": {
+    "glob-parent": "^5.1.2",
+    "merge": "~2.1.1",
+    "set-value": "~4.0.1",
+    "nth-check": "~2.0.1",
+    "ansi-regex": "~5.0.1"
   },
   "eslintConfig": {
     "root": true,
