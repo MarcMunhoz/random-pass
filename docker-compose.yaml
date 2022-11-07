@@ -10,5 +10,5 @@ services:
     container_name: "random-pass_ctn"
     hostname: "random-pass"
     ports:
-      - 8080:8080
-    entrypoint: ["yarn", "serve"]
+      - 1234:1234
+    entrypoint: [ "yarn", "dev" ]
