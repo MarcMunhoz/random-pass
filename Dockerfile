@@ -1,17 +1,17 @@
-FROM node:12-alpine
+FROM node:16-alpine
 
 ARG APP_PATH=/app
 
-ENV PORT=8080
+ENV PORT=1234
 
 COPY ["package.json", "yarn.lock", "./"]
 
-RUN yarn global add @vue/cli-service \
+RUN yarn create vite \
   && yarn \
   && rm -rf /var/cache/apk/* /tmp/* /var/tmp/* /usr/share/man
 
-WORKDIR $APP_PATH
+WORKDIR ${APP_PATH}
 
-VOLUME $APP_PATH
+VOLUME ${APP_PATH}
 
-ENTRYPOINT [ "yarn", "serve" ]
+ENTRYPOINT [ "yarn", "dev" ]

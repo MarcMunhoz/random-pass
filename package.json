@@ -1,30 +1,27 @@
 {
   "name": "random-pass",
-  "version": "0.2.0",
+  "version": "0.4.0",
   "private": true,
   "description": "A simple random string generator to better passwords",
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "serve": "vite preview",
+    "dev": "vite --host",
+    "build": "vite build",
+    "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src"
   },
   "dependencies": {
-    "@vue/cli": "^4.5.13",
-    "@vue/cli-plugin-babel": "^5.0.6",
+    "@vitejs/plugin-vue": "^3.2.0",
+    "vite": "^3.2.3",
     "bootstrap": "^5.1.3",
     "bootstrap-icons-vue": "^0.7.0",
     "follow-redirects": "^1.14.7",
     "less": "3.11.1",
     "less-loader": "5.0.0",
     "node-forge": "^1.0.0",
-    "vue": "^3.1.0",
+    "vue": "^3.2.41",
     "vue-clipboard2": "0.3.3"
   },
   "devDependencies": {
-    "@vue/cli-plugin-eslint": "^4.5.15",
-    "@vue/cli-service": "^4.5.15",
-    "@vue/compiler-sfc": "^3.2.20",
-    "babel-eslint": "^10.0.3",
     "chokidar": "^3.5.2",
     "copy-webpack-plugin": "^5.1.2",
     "eslint": "^6.7.2",
@@ -45,11 +42,6 @@
     "rules": {},
     "parserOptions": {
       "parser": "babel-eslint"
-    }
-  },
-  "postcss": {
-    "plugins": {
-      "autoprefixer": {}
     }
   },
   "browserslist": [
