@@ -3,3 +3,6 @@ node_modules
 
 #ENV Files
 .env
+
+.vscode
+dist
