@@ -66,6 +66,7 @@
     "got": "^11.8.5",
     "terser": "^5.14.2",
     "loader-utils": "^1.4.2",
-    "json5": "^1.0.2"
+    "json5": "^1.0.2",
+    "http-cache-semantics": "^4.1.1"
   }
 }
