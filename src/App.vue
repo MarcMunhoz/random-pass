@@ -10,7 +10,7 @@
           senhas mais difíceis de serem quebradas. Algumas dicas:
           <ul class="list-group my-2">
             <li class="list-group-item list-group-item-secondary">
-              Dê preferência a senhas sem referências ao mundo <em>real</em>. Exemplo do que <strong>não</strong> fazer: <del>casa-da-praia-em-maragogi</del>
+              Dê preferência a senhas sem referências ao mundo <em>real</em>. Exemplo do que <strong>não</strong> fazer: <del>casa_da_praia_em_maragogi</del>
             </li>
             <li class="list-group-item list-group-item-secondary">Combine letras, números e símbolos</li>
             <li class="list-group-item list-group-item-secondary">Caso guarde as senhas digitalmente, use sempre criptografia</li>
@@ -25,7 +25,7 @@
 
           <p>
             <label for="passLen" class="d-block">Quantos carateres terá sua senha?</label>
-            <input type="number" name="passLen" min="10" max="99" v-model="stringLen" />
+            <input type="number" name="passLen" id="passLen" min="10" max="99" v-model="stringLen" />
           </p>
 
           <p class="font-weight-bolder shadow-sm">
