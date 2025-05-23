@@ -29,9 +29,9 @@
           </p>
 
           <p class="font-weight-bolder shadow-sm">
-            <component :is="icon.ico" :class="icon.class" />
+            <component :is="icon.component" :class="icon.class" />
             {{ theString }}
-            <component :is="icon.ico" :class="icon.class" />
+            <component :is="icon.component" :class="icon.class" />
           </p>
 
           <button type="button" class="btn btn-secondary copy" @click="doCopy">Copiar</button>
@@ -43,103 +43,30 @@
   </div>
 </template>
 
-<script>
-import { BIconEye, BIconEyeFill } from "bootstrap-icons-vue";
+<script setup>
+import { ref, onMounted } from "vue";
 import AppFooter from "@/components/Footer";
+import { generatePassword } from "@/composables/usePasswordGenerator";
+import { useIconSwitcher } from "@/composables/useIconSwitcher";
 
-export default {
-  name: "App",
-  data() {
-    return {
-      theString: "Seu texto apareçará aqui",
-      stringLen: "10",
-      icon: {
-        ico: "BIconEye",
-        class: String,
-      },
-    };
-  },
-  components: {
-    AppFooter,
-    BIconEye,
-    BIconEyeFill,
-  },
-  methods: {
-    rndStr(len) {
-      let text = "";
-      let chars = "abcdefghijklmnopqrstuvwxyz0123456789!@#$-={}[]?;:ABCDEFGHIJKLMNOPQRSTUVWYZ";
+const stringLen = ref(10);
+const theString = ref("Sua senha aparecerá aqui");
 
-      // Minimum of two special characters
-      const specialChars = "!@#$-={}[]?;:";
-      const specialCharPositions = [];
-      for (let i = 0; i < 2; i++) {
-        specialCharPositions.push(Math.floor(Math.random() * len));
-      }
-      specialCharPositions.sort((a, b) => a - b);
+const { icon, animateCopy } = useIconSwitcher();
 
-      // Fill the string according to the positions of the special characters
-      let specialCharIndex = 0;
-      let sameCharCount = 0;
-      for (let i = 0; i < len; i++) {
-        if (i === specialCharPositions[specialCharIndex]) {
-          text += specialChars.charAt(Math.floor(Math.random() * specialChars.length));
-          specialCharIndex++;
-        } else {
-          let randomChar = chars.charAt(Math.floor(Math.random() * chars.length));
-          if (text[i - 1] === randomChar) {
-            if (sameCharCount < 2) {
-              text += randomChar;
-              sameCharCount++;
-            } else {
-              let diffCharIndex = chars.indexOf(randomChar) - 1;
-              if (diffCharIndex < 0) diffCharIndex = chars.length - 1;
-              text += chars[diffCharIndex];
-              sameCharCount = 0;
-            }
-          } else {
-            text += randomChar;
-            sameCharCount = 0;
-          }
-        }
-      }
+function doCopy() {
+  navigator.clipboard.writeText(theString.value).then(
+    () => animateCopy(),
+    () => alert("O texto não pôde ser copiado!")
+  );
+}
 
-      return text;
-    },
-    doCopy: function () {
-      this.$copyText(this.theString).then(
-        () => {
-          this.changeText();
-        },
-        () => {
-          alert("O texto não pôde ser copiado!");
-        }
-      );
-    },
-    changeText() {
-      const btn = document.getElementsByClassName("copy");
-      btn[0].setAttribute("style", "font-weight: 600");
-      btn[0].classList.add("btn-success");
-      btn[0].innerHTML = "Copiado!";
-      this.icon.ico = "BIconEyeFill";
-      this.icon.class = "text-success";
-
-      const cp = setInterval(() => {
-        clearInterval(cp);
-        btn[0].setAttribute("style", "font-weight: 300");
-        btn[0].classList.remove("btn-success");
-        btn[0].innerHTML = "Copiar";
-        this.icon.ico = "BIconEye";
-        this.icon.class = "";
-      }, 1500);
-    },
-  },
-  mounted() {
-    setInterval(() => {
-      let theString = this.rndStr(this.stringLen);
-      this.theString = theString;
-    }, 5000);
-  },
-};
+onMounted(() => {
+  theString.value = generatePassword(stringLen.value);
+  setInterval(() => {
+    theString.value = generatePassword(stringLen.value);
+  }, 5000);
+});
 </script>
 
 <style lang="less">
