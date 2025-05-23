@@ -24,7 +24,7 @@
           </p>
 
           <p>
-            <label for="passLen" class="d-block">Quantos carateres terá sua senha?</label>
+            <label for="passLen" class="d-block">Quantos caracteres terá sua senha?</label>
             <input type="number" name="passLen" id="passLen" min="10" max="99" v-model="stringLen" />
           </p>
 
