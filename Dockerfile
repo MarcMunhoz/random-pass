@@ -1,10 +1,10 @@
-FROM node:18-alpine
+FROM node:22-alpine
 
 ARG APP_PATH=/app
 
 ENV PORT=1234
 
-COPY ["package.json", "yarn.lock", "./"]
+COPY ["./app/package.json", "./app/yarn.lock", "./"]
 
 RUN yarn global add vite \
   && yarn \
