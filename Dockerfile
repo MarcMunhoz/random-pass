@@ -6,7 +6,7 @@ ENV PORT=1234
 
 COPY ["./app/package.json", "./app/yarn.lock", "./"]
 
-RUN yarn global add vite \
+RUN yarn global add vite@6.4.2 \
   && yarn \
   && rm -rf /var/cache/apk/* /tmp/* /var/tmp/* /usr/share/man
 
