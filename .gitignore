@@ -6,3 +6,6 @@ app/.env
 
 .vscode
 app/dist
+
+# Log files
+.codex

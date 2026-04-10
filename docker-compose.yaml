@@ -6,7 +6,7 @@ services:
       - ./app:/app
     working_dir: /app
     container_name: "random-pass_ctn"
-    hostname: "random-pass"
+    hostname: "random-pass_hst"
     ports:
       - 1234:1234
     entrypoint: [ "yarn", "dev" ]
