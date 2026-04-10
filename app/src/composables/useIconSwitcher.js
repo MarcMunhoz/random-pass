@@ -10,6 +10,7 @@ export function useIconSwitcher() {
   const animateCopy = (buttonSelector = '.copy') => {
     const btn = document.querySelector(buttonSelector)
     if (!btn) return
+    const originalText = btn.textContent
 
     // Visual feedback
     btn.style.fontWeight = '600'
@@ -21,7 +22,7 @@ export function useIconSwitcher() {
     setTimeout(() => {
       btn.style.fontWeight = '300'
       btn.classList.remove('btn-success')
-      btn.textContent = 'Copiar'
+      btn.textContent = originalText
       icon.value.component = BIconEye
       icon.value.class = ''
     }, 1500)
