@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased]
+
+## [0.6.1] - 2026-04-22
+### Changed
+- Updated dependency lockfile and transitive toolchain packages
+- Refreshed build-related dependencies used by the frontend stack
+- Runtime behavior and user-facing features remain unchanged in this release
+
 ## [0.6.0] - 2026-04-10
 ### Added
 - Password composition controls for lowercase, uppercase, numbers, and special characters

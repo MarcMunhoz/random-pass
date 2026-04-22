@@ -1,6 +1,6 @@
 {
   "name": "random-pass",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "private": true,
   "description": "A simple random string generator to better passwords",
   "scripts": {
