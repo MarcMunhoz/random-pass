@@ -11,6 +11,7 @@
           type="number"
           class="form-control"
           name="passLen"
+          data-cy="password-length"
           :min="minPasswordLength"
           max="99"
           :value="stringLen"
@@ -22,15 +23,15 @@
       <h3 class="h6 fw-bold mb-3">Tipos de caracteres</h3>
       <div class="d-grid gap-2 mb-4">
         <div class="form-check form-switch">
-          <input id="opt-lowercase" class="form-check-input" type="checkbox" role="switch" :checked="includeLowercase" @change="onBooleanInput('update:include-lowercase', $event)" />
+          <input id="opt-lowercase" class="form-check-input" type="checkbox" role="switch" data-cy="include-lowercase" :checked="includeLowercase" @change="onBooleanInput('update:include-lowercase', $event)" />
           <label class="form-check-label" for="opt-lowercase">Letras minúsculas</label>
         </div>
         <div class="form-check form-switch">
-          <input id="opt-uppercase" class="form-check-input" type="checkbox" role="switch" :checked="includeUppercase" @change="onBooleanInput('update:include-uppercase', $event)" />
+          <input id="opt-uppercase" class="form-check-input" type="checkbox" role="switch" data-cy="include-uppercase" :checked="includeUppercase" @change="onBooleanInput('update:include-uppercase', $event)" />
           <label class="form-check-label" for="opt-uppercase">Letras maiúsculas</label>
         </div>
         <div class="form-check form-switch">
-          <input id="opt-numbers" class="form-check-input" type="checkbox" role="switch" :checked="includeNumbers" @change="onBooleanInput('update:include-numbers', $event)" />
+          <input id="opt-numbers" class="form-check-input" type="checkbox" role="switch" data-cy="include-numbers" :checked="includeNumbers" @change="onBooleanInput('update:include-numbers', $event)" />
           <label class="form-check-label" for="opt-numbers">Numerais</label>
         </div>
         <div class="form-check form-switch">
@@ -39,6 +40,7 @@
             class="form-check-input"
             type="checkbox"
             role="switch"
+            data-cy="include-specials"
             :checked="includeSpecialChars"
             @change="onBooleanInput('update:include-special-chars', $event)"
           />
@@ -53,6 +55,7 @@
             id="numbersCount"
             type="number"
             class="form-control"
+            data-cy="numbers-count"
             min="1"
             max="99"
             :value="numbersCount"
@@ -65,6 +68,7 @@
             id="specialCharsCount"
             type="number"
             class="form-control"
+            data-cy="specials-count"
             min="1"
             max="99"
             :value="specialCharsCount"
@@ -73,7 +77,7 @@
         </div>
       </div>
 
-      <button type="button" class="btn btn-success w-100 mt-4" @click="$emit('refresh-password')">Gerar agora</button>
+      <button type="button" class="btn btn-success w-100 mt-4" data-cy="generate-password" @click="$emit('refresh-password')">Gerar agora</button>
     </div>
   </section>
 </template>
