@@ -1,4 +1,4 @@
-FROM node:22-alpine
+FROM node:22.23.1-alpine
 
 ARG APP_PATH=/app
 
