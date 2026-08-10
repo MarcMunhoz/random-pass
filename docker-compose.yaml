@@ -4,6 +4,7 @@ services:
     image: random-pass_img
     volumes:
       - ./app:/app
+      - /app/node_modules
     working_dir: /app
     container_name: "random-pass_ctn"
     hostname: "random-pass_hst"
@@ -12,7 +13,7 @@ services:
     entrypoint: [ "yarn", "dev" ]
     # entrypoint: [ "sh", "-c", "sleep 2073600" ]
   cypress:
-    image: cypress/included:15.18.1
+    image: cypress/included:15.20.1
     depends_on:
       - app
     volumes:
