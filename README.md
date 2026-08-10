@@ -1,4 +1,4 @@
-![Version](https://img.shields.io/badge/version-0.7.0-0A7D34)
+![Version](https://img.shields.io/badge/version-0.7.1-0A7D34)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/8ec66615-d6ed-4808-be53-57ca2a515688/deploy-status?branch=main)](https://app.netlify.com/projects/random-pass/deploys)
 
 # Random Pass
@@ -96,5 +96,5 @@ make down
 
 - Application version is defined in `app/package.json`
 - Historical changes are documented in `CHANGELOG.md`
-- Current release notes: `0.7.0` in `CHANGELOG.md`
+- Current release notes: `0.7.1` in `CHANGELOG.md`
 - Changes merged after the last released version are tracked under `Unreleased` in `CHANGELOG.md` until the next version bump

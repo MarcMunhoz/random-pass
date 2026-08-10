@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.7.1] - 2026-08-10
+
 ### Added
 - Added focused regression tests for cryptographically secure password generation and unbiased random index selection
 
