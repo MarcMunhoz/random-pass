@@ -2,6 +2,20 @@
 
 ## [Unreleased]
 
+### Added
+- Added focused regression tests for cryptographically secure password generation and unbiased random index selection
+
+### Changed
+- Reduced and reclassified direct dependencies while retaining only targeted Yarn resolutions for vulnerable transitive packages
+- Updated Cypress within the existing major line and regenerated the Yarn lockfile with patched transitive versions
+- Replaced the unnecessary Less compilation path with standard CSS and aligned Docker with the project-local Vite version
+
+### Fixed
+- Kept the image-installed project dependencies available when the application source is bind-mounted during `make dev`
+- Replaced `Math.random()` with Web Crypto rejection sampling for character selection and Fisher-Yates shuffling
+- Removed the vulnerable `less > image-size` chain and patched `brace-expansion`, `postcss`, `js-yaml`, and `nanoid`
+- Cleared all moderate, high, and critical findings reported by the local Yarn audit
+
 ## [0.7.0] - 2026-07-09
 ### Added
 - Added Cypress end-to-end validation for the password generator's main flows
