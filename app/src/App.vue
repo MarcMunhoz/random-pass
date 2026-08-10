@@ -123,7 +123,7 @@ onUnmounted(() => {
 });
 </script>
 
-<style lang="less">
+<style>
 :root {
   --app-bg-start: #f4f7ff;
   --app-bg-end: #ecf7f1;
