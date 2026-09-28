@@ -62,11 +62,14 @@ Archive a completed change in the experimental workflow.
    - Determine what changes would be applied (adds, modifications, removals, renames)
    - Show a combined summary before prompting
 
-   **Prompt options:**
-   - If changes needed: "Sync now (recommended)", "Archive without syncing"
-   - If already synced: "Archive now", "Sync anyway", "Cancel"
+   **Mandatory sync behavior:**
+   - If changes are needed, invoke the `openspec-sync-specs` workflow for the change before archiving.
+   - If the delta specs are already synced, proceed to archive without applying them again.
+   - If synchronization fails or cannot be completed, stop and report the blocker. Do NOT archive the change.
+   - After synchronization, compare every delta spec with its main spec again. Proceed only when no applicable changes remain.
+   - If `artifactPaths.specs.existingOutputPaths` is empty but the change still contains spec files, stop and report inconsistent status instead of assuming there are no delta specs.
 
-   If user chooses sync, use Task tool (subagent_type: "general-purpose", prompt: "Use Skill tool to invoke openspec-sync-specs for change '<name>'. Delta spec analysis: <include the analyzed delta spec summary>"). Proceed to archive regardless of choice.
+   There is no option to archive a change with unsynchronized delta specs.
 
 5. **Perform the archive**
 
@@ -102,7 +105,7 @@ Archive a completed change in the experimental workflow.
 **Change:** <change-name>
 **Schema:** <schema-name>
 **Archived to:** the archive path derived from `planningHome.changesDir`/YYYY-MM-DD-<name>/
-**Specs:** ✓ Synced to main specs (or "No delta specs" or "Sync skipped")
+**Specs:** ✓ Synced to main specs (or "No delta specs")
 
 All artifacts complete. All tasks complete.
 ```
@@ -113,5 +116,7 @@ All artifacts complete. All tasks complete.
 - Don't block archive on warnings - just inform and confirm
 - Preserve .openspec.yaml when moving to archive (it moves with the directory)
 - Show clear summary of what happened
-- If sync is requested, use openspec-sync-specs approach (agent-driven)
-- If delta specs exist, always run the sync assessment and show the combined summary before prompting
+- If delta specs exist, always run the sync assessment and show the combined summary
+- Synchronize required delta changes with the openspec-sync-specs approach before archiving
+- Reassess every delta spec after synchronization and require zero remaining applicable changes
+- Never archive a change while applicable delta specs remain unsynchronized
