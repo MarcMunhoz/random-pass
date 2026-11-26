@@ -1,10 +1,12 @@
-"""Validate random-pass release metadata at explicit Git revisions."""
+"""Calculate the next random-pass release tag from Git history."""
 
 import argparse
 import json
 import re
-import shlex
 import subprocess
+
+
+STABLE_VERSION = re.compile(r"(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)")
 
 
 def git(*args):
@@ -16,9 +18,7 @@ def read_at(revision, path):
 
 
 def version_parts(version):
-    if not isinstance(version, str) or not re.fullmatch(
-        r"(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)", version
-    ):
+    if not isinstance(version, str) or not STABLE_VERSION.fullmatch(version):
         raise ValueError(f"Expected an X.Y.Z version, got {version!r}")
     return tuple(map(int, version.split(".")))
 
@@ -29,22 +29,39 @@ def version_at(revision):
     return version
 
 
+def release_baseline(revision):
+    tags = git("tag", "--merged", revision, "--list", "v*").splitlines()
+    stable_versions = [tag[1:] for tag in tags if STABLE_VERSION.fullmatch(tag[1:])]
+    return max(stable_versions, key=version_parts) if stable_versions else version_at(revision)
+
+
+def commit_subjects(message):
+    lines = message.splitlines()
+    if not lines:
+        return
+    yield lines[0]
+    if re.search(r" \(#\d+\)$", lines[0]):
+        # GitHub's default squash message lists the original commit subjects.
+        yield from (line[2:] for line in lines[1:] if line.startswith("* "))
+
+
 def expected_version(base, messages):
     major, minor, patch = version_parts(base)
     bump = 0
     for message in messages:
         if re.search(r"^BREAKING(?: |-)CHANGE:", message, re.MULTILINE):
             return f"{major + 1}.0.0"
-        match = re.match(r"^([a-z]+)(\([^\r\n)]+\))?(!)?:", message)
-        if not match:
-            continue
-        kind, scope, breaking = match.groups()
-        if breaking:
-            return f"{major + 1}.0.0"
-        if kind == "feat":
-            bump = 2
-        elif kind in {"fix", "perf"} or (kind == "chore" and scope == "(dependencies)"):
-            bump = max(bump, 1)
+        for subject in commit_subjects(message):
+            match = re.match(r"^([a-z]+)(\([^\r\n)]+\))?(!)?:", subject)
+            if not match:
+                continue
+            kind, scope, breaking = match.groups()
+            if breaking:
+                return f"{major + 1}.0.0"
+            if kind == "feat":
+                bump = 2
+            elif kind in {"fix", "perf"} or (kind == "chore" and scope == "(dependencies)"):
+                bump = max(bump, 1)
     if bump == 2:
         return f"{major}.{minor + 1}.0"
     if bump == 1:
@@ -52,64 +69,21 @@ def expected_version(base, messages):
     return base
 
 
-def validate_metadata(revision, version):
-    dockerfile = re.sub(r"\\\r?\n", " ", read_at(revision, "Dockerfile"))
-    labels = re.findall(r"^\s*LABEL[ \t]+([^\r\n]*)", dockerfile, re.MULTILINE | re.IGNORECASE)
-    versions = []
-    for label in labels:
-        fields = shlex.split(label)
-        if fields and fields[0] == "version":
-            versions.append(" ".join(fields[1:]))
-        else:
-            versions.extend(field.split("=", 1)[1] for field in fields if field.startswith("version="))
-    if versions != [version]:
-        raise ValueError(f"Dockerfile must declare exactly one version label matching {version}")
-    changelog = read_at(revision, "CHANGELOG.md")
-    heading = rf"^## \[{re.escape(version)}\] - [0-9]{{4}}-[0-9]{{2}}-[0-9]{{2}}[ \t]*$"
-    if not re.search(heading, changelog, re.MULTILINE):
-        raise ValueError(f"CHANGELOG.md must include a dated '## [{version}]' heading")
-
-
-def release_version(base, head):
-    base_version = version_at(base)
-    messages = git("log", "-z", "--format=%B", f"{base}..{head}").split("\0")
-    return base_version, expected_version(base_version, messages)
-
-
-def validate_pr(base, head, merge):
-    base_version, expected = release_version(base, head)
-    if version_at(head) != expected:
-        raise ValueError(f"Set app/package.json to the expected version {expected}")
-    if version_at(merge) != expected:
-        raise ValueError(f"The proposed merge must preserve version {expected}")
-    if expected != base_version:
-        validate_metadata(merge, expected)
-
-
 def publication_tag(before, after):
-    previous = version_at(before)
-    current = version_at(after)
-    if current == previous:
-        return None
-    if version_parts(current) < version_parts(previous):
-        raise ValueError(f"Version decreased from {previous} to {current}")
-    return f"v{current}"
+    previous = release_baseline(before)
+    messages = git("log", "-z", "--format=%B", f"{before}..{after}").split("\0")
+    current = expected_version(previous, messages)
+    return f"v{current}" if current != previous else None
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("mode", choices=["pr", "push"])
     parser.add_argument("base")
     parser.add_argument("head")
-    parser.add_argument("--merge", default="HEAD", help="Proposed merge revision for PR validation")
     args = parser.parse_args()
     try:
-        if args.mode == "pr":
-            validate_pr(args.base, args.head, args.merge)
-            return
         tag = publication_tag(args.base, args.head)
         if tag:
-            validate_metadata(args.head, tag[1:])
             print(tag)
     except (ValueError, KeyError, subprocess.CalledProcessError) as error:
         parser.exit(1, f"Release validation failed: {error}\n")

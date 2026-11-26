@@ -36,13 +36,13 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Validate release version
+      - name: Calculate release version
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           python3 -B .github/scripts/test_release_policy.py
-          python3 -B .github/scripts/release_policy.py pr "$BASE_SHA" "$HEAD_SHA" --merge "$GITHUB_SHA"
+          TAG=$(python3 -B .github/scripts/release_policy.py "$BASE_SHA" "$GITHUB_SHA")
+          echo "Planned release: ${TAG:-none}" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Build and test application
         run: |

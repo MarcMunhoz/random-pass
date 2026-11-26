@@ -1,4 +1,4 @@
-![Version](https://img.shields.io/badge/version-0.7.1-0A7D34)
+[![Latest release](https://img.shields.io/github/v/release/MarcMunhoz/random-pass)](https://github.com/MarcMunhoz/random-pass/releases/latest)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/8ec66615-d6ed-4808-be53-57ca2a515688/deploy-status?branch=main)](https://app.netlify.com/projects/random-pass/deploys)
 
 # Random Pass
@@ -94,7 +94,6 @@ make down
 
 ## Versioning and Release Notes
 
-- Application version is defined in `app/package.json`
-- Historical changes are documented in `CHANGELOG.md`
-- Current release notes: `0.7.1` in `CHANGELOG.md`
-- Changes merged after the last released version are tracked under `Unreleased` in `CHANGELOG.md` until the next version bump
+- Releases use the latest stable Git tag reachable from `main` as their version baseline.
+- The release quality check previews the next version from the Conventional Commits in the proposed merge. After a merge into `main`, GitHub Actions publishes the calculated tag and release notes when the commits warrant a version bump.
+- Historical release notes through 0.7.1 are available in `CHANGELOG.md`. Subsequent notes are available in [GitHub Releases](https://github.com/MarcMunhoz/random-pass/releases).

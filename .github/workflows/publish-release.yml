@@ -7,6 +7,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: publish-release-main
+  queue: max
+
 defaults:
   run:
     shell: bash
@@ -25,13 +29,13 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Detect version increase
+      - name: Calculate release tag
         id: release
         env:
           BEFORE_SHA: ${{ github.event.before }}
         run: |
           git merge-base --is-ancestor "$BEFORE_SHA" "$GITHUB_SHA"
-          TAG=$(python3 -B .github/scripts/release_policy.py push "$BEFORE_SHA" "$GITHUB_SHA")
+          TAG=$(python3 -B .github/scripts/release_policy.py "$BEFORE_SHA" "$GITHUB_SHA")
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
   publish-release:
@@ -41,9 +45,6 @@ jobs:
     timeout-minutes: 10
     permissions:
       contents: write
-    concurrency:
-      group: publish-release-${{ needs.validate-release.outputs.tag }}
-      cancel-in-progress: false
     steps:
       - uses: actions/checkout@v5
         with:

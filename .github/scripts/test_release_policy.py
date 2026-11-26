@@ -12,51 +12,32 @@ class ReleasePolicyTest(unittest.TestCase):
             (["fix: Fixes build", "feat(app): Adds a feature"], "2.7.0"),
             (["feat!: Changes API"], "3.0.0"),
             (["docs: Updates guide\n\nBREAKING CHANGE: changes API"], "3.0.0"),
+            (["Promotes updates (#55)\n\n* docs: Updates notes\n* fix: Fixes build"], "2.6.3"),
+            (["docs: Adds examples\n\n* feat: Example title"], "2.6.2"),
         ]
         for messages, expected in cases:
             with self.subTest(messages=messages):
                 self.assertEqual(policy.expected_version("2.6.2", messages), expected)
 
-    def test_publication_compares_numeric_versions(self):
-        with patch.object(policy, "version_at", side_effect=["2.9.9", "2.10.0"]):
-            self.assertEqual(policy.publication_tag("before", "after"), "v2.10.0")
+    def test_uses_highest_stable_tag_reachable_from_base(self):
+        with patch.object(policy, "git", side_effect=[
+            "v2.9.9\nv2.10.0\nv3.0.0-rc.1\nv04.0.0\npreview\n",
+            "fix: Fixes build\0",
+        ]) as git:
+            self.assertEqual(policy.publication_tag("before", "after"), "v2.10.1")
+        self.assertEqual(git.call_args_list[0].args, ("tag", "--merged", "before", "--list", "v*"))
 
-    def test_unchanged_version_skips_publication(self):
-        with patch.object(policy, "version_at", return_value="2.6.2"):
+    def test_docs_only_changes_skip_publication(self):
+        with patch.object(policy, "git", side_effect=["v2.6.2\n", "docs: Updates notes\0"]):
             self.assertIsNone(policy.publication_tag("before", "after"))
 
-    def test_version_regression_fails(self):
-        with patch.object(policy, "version_at", side_effect=["2.6.2", "2.6.1"]):
-            with self.assertRaises(ValueError):
-                policy.publication_tag("before", "after")
-
-    def test_version_metadata_requires_docker_label_and_changelog_heading(self):
-        with patch.object(policy, "read_at", side_effect=[
-            'LABEL author="example" \\\n  version="2.6.3"',
-            "## [Unreleased]\n\n## [2.6.3] - 2026-11-25\n",
-        ]):
-            policy.validate_metadata("head", "2.6.3")
-        with patch.object(policy, "read_at", side_effect=[
-            'LABEL version="2.6.3"', "## [2.6.30] - 2026-11-25",
-        ]):
-            with self.assertRaises(ValueError):
-                policy.validate_metadata("head", "2.6.3")
-
-    def test_conflicting_unquoted_docker_version_is_rejected(self):
-        with patch.object(policy, "read_at", side_effect=[
-            'LABEL version="2.6.3"\nLABEL version=2.6.2', "### 2.6.3",
-        ]):
-            with self.assertRaises(ValueError):
-                policy.validate_metadata("merge", "2.6.3")
-
-    def test_pr_validates_metadata_on_the_merge_tree(self):
+    def test_uses_manifest_for_initial_release_history_without_tags(self):
         with (
-            patch.object(policy, "version_at", side_effect=["2.6.2", "2.6.3", "2.6.3"]),
-            patch.object(policy, "git", return_value="fix: Fixes issue\0"),
-            patch.object(policy, "validate_metadata") as validate_metadata,
+            patch.object(policy, "git", side_effect=["", "feat: Adds a feature\0"]),
+            patch.object(policy, "read_at", return_value='{"version":"2.6.2"}') as read,
         ):
-            policy.validate_pr("base", "head", "merge")
-        validate_metadata.assert_called_once_with("merge", "2.6.3")
+            self.assertEqual(policy.publication_tag("before", "after"), "v2.7.0")
+        read.assert_called_once_with("before", "app/package.json")
 
 
 if __name__ == "__main__":
