@@ -1,0 +1,80 @@
+name: Release quality
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, reopened, synchronize, ready_for_review, edited]
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  quality-gate:
+    if: ${{ github.event.action != 'edited' || github.event.changes.base.ref.from != '' }}
+    concurrency:
+      group: release-quality-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Validate production PR source
+        env:
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
+        run: |
+          if [[ "$HEAD_REF" != develop || "$HEAD_REPOSITORY" != "$GITHUB_REPOSITORY" ]]; then
+            echo "Production pull requests must come from this repository's develop branch."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Validate release version
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          python3 -B .github/scripts/test_release_policy.py
+          python3 -B .github/scripts/release_policy.py pr "$BASE_SHA" "$HEAD_SHA" --merge "$GITHUB_SHA"
+
+      - name: Build and test application
+        run: |
+          git archive --format=tar HEAD Dockerfile app |
+            docker build --tag random-pass-quality-gate -
+
+          APP_CONTAINER=$(docker run --detach --init --entrypoint sh -e CI=true \
+            --mount "type=bind,source=$PWD/app,target=/source,readonly" \
+            random-pass-quality-gate -ec '
+              cp -R /source/. .
+              yarn build
+              test -s dist/index.html
+              yarn test
+              exec yarn serve --host 127.0.0.1 --port 1234 --strictPort
+            ')
+          trap 'docker logs "$APP_CONTAINER"; docker rm --force --volumes "$APP_CONTAINER" >/dev/null' EXIT
+
+          docker run --rm --init --shm-size=1g --entrypoint sh \
+            --network "container:$APP_CONTAINER" \
+            --mount "type=bind,source=$PWD/app,target=/e2e,readonly" \
+            --workdir /e2e -e CI=true -e CYPRESS_BASE_URL=http://127.0.0.1:1234 \
+            cypress/included:15.20.1 -ec '
+              node --input-type=module -e "
+                for (let attempt = 0; attempt < 30; attempt++) {
+                  const response = await fetch(process.env.CYPRESS_BASE_URL, {
+                    signal: AbortSignal.timeout(1000),
+                  }).catch(() => null);
+                  if (response?.ok) process.exit(0);
+                  await new Promise(resolve => setTimeout(resolve, 1000));
+                }
+                throw new Error(\"Vite preview did not become ready\");
+              "
+              export NODE_PATH="$(npm root -g)"
+              cypress run
+            '

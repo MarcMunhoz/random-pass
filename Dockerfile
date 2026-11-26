@@ -1,5 +1,7 @@
 FROM node:22.23.1-alpine
 
+LABEL version="0.7.1"
+
 ARG APP_PATH=/app
 
 ENV PORT=1234
