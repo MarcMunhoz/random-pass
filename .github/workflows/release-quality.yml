@@ -48,11 +48,14 @@ jobs:
         run: |
           git archive --format=tar HEAD Dockerfile app |
             docker build --tag random-pass-quality-gate -
+          git archive --format=tar HEAD Dockerfile app |
+            docker build --target e2e --tag random-pass-e2e -
 
           APP_CONTAINER=$(docker run --detach --init --entrypoint sh -e CI=true \
             --mount "type=bind,source=$PWD/app,target=/source,readonly" \
             random-pass-quality-gate -ec '
               cp -R /source/. .
+              yarn lint
               yarn build
               test -s dist/index.html
               yarn test
@@ -62,9 +65,8 @@ jobs:
 
           docker run --rm --init --shm-size=1g --entrypoint sh \
             --network "container:$APP_CONTAINER" \
-            --mount "type=bind,source=$PWD/app,target=/e2e,readonly" \
-            --workdir /e2e -e CI=true -e CYPRESS_BASE_URL=http://127.0.0.1:1234 \
-            cypress/included:15.20.1 -ec '
+            -e CI=true -e CYPRESS_BASE_URL=http://127.0.0.1:1234 \
+            random-pass-e2e -ec '
               node --input-type=module -e "
                 for (let attempt = 0; attempt < 30; attempt++) {
                   const response = await fetch(process.env.CYPRESS_BASE_URL, {
@@ -75,6 +77,5 @@ jobs:
                 }
                 throw new Error(\"Vite preview did not become ready\");
               "
-              export NODE_PATH="$(npm root -g)"
-              cypress run
+              yarn test:e2e
             '
