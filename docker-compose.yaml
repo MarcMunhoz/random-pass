@@ -13,12 +13,14 @@ services:
     entrypoint: [ "yarn", "dev" ]
     # entrypoint: [ "sh", "-c", "sleep 2073600" ]
   cypress:
-    image: cypress/included:15.20.1
+    build:
+      context: .
+      target: e2e
     depends_on:
       - app
+    network_mode: service:app
     volumes:
-      - ./app:/e2e
-    working_dir: /e2e
+      - ./app/cypress.config.js:/e2e/cypress.config.js:ro
+      - ./app/cypress:/e2e/cypress:ro
     environment:
-      CYPRESS_baseUrl: http://app:1234
-    entrypoint: [ "cypress", "run" ]
+      CYPRESS_BASE_URL: http://127.0.0.1:1234
